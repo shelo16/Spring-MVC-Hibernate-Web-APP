@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+
+	<bean id="myDataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+	<property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
+	
+	<!-- value should be your localhost port/database name -->
+	<property name="jdbcUrl" 
+		value="jdbc:mysql://localhost:3308/db_test_connection?allowPublicKeyRetrieval=true&amp;useSSL=false">
+	</property>
+	
+	<!-- value should be your DB connection username -->
+	<property name="user" value="shelo"></property>
+	
+	<!-- value should be your DB connection password -->
+	<property name="password" value="kandakeba"></property>
+	
+	<!-- Pooling Properties -->
+	<property name="initialPoolSize" value="5"></property>
+	<property name="minPoolSize" value="5"></property>
+	<property name="maxPoolSize" value="20"></property>
+	<property name="maxIdleTime" value="3000"></property>
+	
+	</bean>
+	
+	
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	<property name="dataSource" ref="myDataSource"></property>
+	<property name="packagesToScan" value="com.tornikeshelia.entity"></property>
+	<property name="hibernateProperties">
+		<props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			<prop key="hibernate.show_sql">true</prop>
+		</props>
+	</property>
+	</bean>
+	<bean id="myTransactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+	<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="myTransactionManager" />
+	<mvc:annotation-driven></mvc:annotation-driven>
+	<context:component-scan base-package="com.tornikeshelia"></context:component-scan>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<property name="prefix" value="/WEB-INF/view/"></property>
+	<property name="suffix" value=".jsp"></property>
+	</bean>
+</beans>
